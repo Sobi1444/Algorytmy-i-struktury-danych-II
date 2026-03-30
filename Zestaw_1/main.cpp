@@ -1,74 +1,84 @@
 #include <iostream>
-#include <unordered_set>
-using namespace std;
+#include <list>
+#include <cassert>
 
 class Zbior {
 private:
-    unordered_set<int> dane;
+    static const int BUCKET = 10;
+    std::list<int> tabela[BUCKET];
+
+    int hash(int x) const { return (x % BUCKET + BUCKET) % BUCKET; }
 
 public:
-    bool pusty() { return dane.empty(); }
-    int rozmiar() { return dane.size(); }
-    void dodaj(int x) { dane.insert(x); }
-    void usun(int x) { dane.erase(x); }
-    bool zawiera(int x) { return dane.count(x) > 0; }
-    void wyczysc() { dane.clear(); }
-
+    bool pusty() { return rozmiar() == 0; }
+    int rozmiar() {
+        int licznik = 0;
+        for (int i = 0; i < BUCKET; i++)
+            licznik += tabela[i].size();
+        return licznik;
+    }
+    void dodaj(int x) {
+        if (!zawiera(x)) tabela[hash(x)].push_back(x);
+    }
+    void usun(int x) { tabela[hash(x)].remove(x); }
+    bool zawiera(int x) {
+        for (int e : tabela[hash(x)])
+            if (e == x) return true;
+        return false;
+    }
+    void wyczysc() {
+        for (int i = 0; i < BUCKET; i++)
+            tabela[i].clear();
+    }
     Zbior suma(Zbior& inny) {
         Zbior wynik = *this;
-        for (int x : inny.dane) wynik.dodaj(x);
+        for (int i = 0; i < BUCKET; i++)
+            for (int x : inny.tabela[i]) wynik.dodaj(x);
         return wynik;
     }
-
     Zbior czescWspolna(Zbior& inny) {
         Zbior wynik;
-        for (int x : dane)
-            if (inny.zawiera(x)) wynik.dodaj(x);
+        for (int i = 0; i < BUCKET; i++)
+            for (int x : tabela[i])
+                if (inny.zawiera(x)) wynik.dodaj(x);
         return wynik;
     }
-
     Zbior roznica(Zbior& inny) {
         Zbior wynik;
-        for (int x : dane)
-            if (!inny.zawiera(x)) wynik.dodaj(x);
+        for (int i = 0; i < BUCKET; i++)
+            for (int x : tabela[i])
+                if (!inny.zawiera(x)) wynik.dodaj(x);
         return wynik;
     }
-
     bool podzbior(Zbior& inny) {
-        for (int x : dane)
-            if (!inny.zawiera(x)) return false;
+        for (int i = 0; i < BUCKET; i++)
+            for (int x : tabela[i])
+                if (!inny.zawiera(x)) return false;
         return true;
     }
-
     void wypisz() {
-        cout << "{ ";
-        for (int x : dane) cout << x << " ";
-        cout << "}" << endl;
+        std::cout << "{ ";
+        for (int i = 0; i < BUCKET; i++)
+            for (int x : tabela[i]) std::cout << x << " ";
+        std::cout << "}" << std::endl;
     }
 };
 
 int main() {
     Zbior A, B;
-
     A.dodaj(1); A.dodaj(2); A.dodaj(3); A.dodaj(4);
     B.dodaj(3); B.dodaj(4); B.dodaj(5); B.dodaj(6);
-
-    cout << "A = "; A.wypisz();
-    cout << "B = "; B.wypisz();
-
+    std::cout << "A = "; A.wypisz();
+    std::cout << "B = "; B.wypisz();
     Zbior s = A.suma(B);
-    cout << "A u B = "; s.wypisz();
-
+    std::cout << "A u B = "; s.wypisz();
     Zbior cw = A.czescWspolna(B);
-    cout << "A n B = "; cw.wypisz();
-
+    std::cout << "A n B = "; cw.wypisz();
     Zbior r = A.roznica(B);
-    cout << "A - B = "; r.wypisz();
-
+    std::cout << "A - B = "; r.wypisz();
     Zbior C;
     C.dodaj(1); C.dodaj(2);
-    cout << "C = "; C.wypisz();
-    cout << "czy C to podzbior A? " << (C.podzbior(A) ? "tak" : "nie") << endl;
-
+    std::cout << "C = "; C.wypisz();
+    std::cout << "czy C to podzbior A? " << (C.podzbior(A) ? "tak" : "nie") << std::endl;
     return 0;
 }
