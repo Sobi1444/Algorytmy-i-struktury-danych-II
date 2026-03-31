@@ -1,8 +1,6 @@
 #ifndef EDGE_HPP
 #define EDGE_HPP
 
-#include <iostream>
-
 template <typename T>
 class Edge {
 public:
@@ -16,11 +14,5 @@ public:
         return source == other.source && target == other.target;
     }
 };
-
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const Edge<T>& edge) {
-    os << "(" << edge.source << "," << edge.target << ")";
-    return os;
-}
 
 #endif

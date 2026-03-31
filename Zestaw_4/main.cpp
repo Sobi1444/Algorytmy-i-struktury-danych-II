@@ -26,8 +26,10 @@ int main() {
     std::cout << "\n";
 
     std::cout << "krawedzie: ";
-    for (auto it = G.edge_begin(); it != G.edge_end(); ++it)
-        std::cout << *it << " ";
+    for (auto it = G.edge_begin(); it != G.edge_end(); ++it) {
+        Edge<int> e = *it;
+        std::cout << "(" << e.source << "," << e.target << ") ";
+    }
     std::cout << "\n";
 
     std::cout << "sasiedzi 0: ";
