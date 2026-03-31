@@ -19,7 +19,7 @@ public:
         int aktualny;
     public:
         NodeIterator(const Graph *g, int u) : graf(g), aktualny(u) {}
-        int operator*() const override { return aktualny; }
+        int operator*() const { return aktualny; }
         NodeIterator& operator++() { ++aktualny; return *this; }
         bool operator!=(const NodeIterator& o) const { return aktualny != o.aktualny; }
     };
@@ -35,10 +35,8 @@ public:
             }
         }
     public:
-        EdgeIterator(const Graph *g, int u = 0, int w = 0) : graf(g), u(u), w(w) {
-            if (u < graf->v()) next();
-        }
-        Edge<int> operator*() const override { return Edge<int>(u, graf->lista_sasiedztwa[u][w]); }
+        EdgeIterator(const Graph *g, int u = 0, int w = 0) : graf(g), u(u), w(w) { next(); }
+        Edge<int> operator*() const { return Edge<int>(u, graf->lista_sasiedztwa[u][w]); }
         EdgeIterator& operator++() { ++w; next(); return *this; }
         bool operator!=(const EdgeIterator& o) const { return u != o.u || w != o.w; }
     };
@@ -48,17 +46,17 @@ public:
         int wierzcholek, indeks;
     public:
         AdjacentIterator(const Graph *g, int u, int i = 0) : graf(g), wierzcholek(u), indeks(i) {}
-        int operator*() const override { return graf->lista_sasiedztwa[wierzcholek][indeks]; }
+        int operator*() const { return graf->lista_sasiedztwa[wierzcholek][indeks]; }
         AdjacentIterator& operator++() { ++indeks; return *this; }
         bool operator!=(const AdjacentIterator& o) const { return indeks != o.indeks; }
     };
 
-    NodeIterator node_begin() const { return NodeIterator(this, 0); }
-    NodeIterator node_end() const { return NodeIterator(this, v()); }
-    EdgeIterator edge_begin() const { return EdgeIterator(this); }
-    EdgeIterator edge_end() const { return EdgeIterator(this, v(), 0); }
-    AdjacentIterator adj_begin(int u) const { return AdjacentIterator(this, u, 0); }
-    AdjacentIterator adj_end(int u) const { return AdjacentIterator(this, u, lista_sasiedztwa[u].size()); }
+    NodeIterator node_begin() { return NodeIterator(this, 0); }
+    NodeIterator node_end() { return NodeIterator(this, v()); }
+    EdgeIterator edge_begin() { return EdgeIterator(this); }
+    EdgeIterator edge_end() { return EdgeIterator(this, v(), 0); }
+    AdjacentIterator adj_begin(int u) { return AdjacentIterator(this, u, 0); }
+    AdjacentIterator adj_end(int u) { return AdjacentIterator(this, u, lista_sasiedztwa[u].size()); }
 
     Graph(int n, bool skierowany = false) : skierowany(skierowany) {
         lista_sasiedztwa = std::vector<std::vector<int>>(n);
